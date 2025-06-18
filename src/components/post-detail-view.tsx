@@ -84,7 +84,7 @@ export function PostDetailView({ post }: PostDetailViewProps) {
       .trim();
   };
 
-  const renderAttachment = (attachment: any, index: number) => {
+  const renderAttachment = (attachment: { type?: string; image?: string; description?: string; url?: string }, index: number) => {
     if (attachment.type === 'photo' && attachment.image) {
       return (
         <div key={index} className="mt-6">
@@ -198,17 +198,22 @@ export function PostDetailView({ post }: PostDetailViewProps) {
                     {children}
                   </a>
                 ),
-                img: ({ src, alt, ...props }) => (
-                  <Image
-                    src={src || ''}
-                    alt={alt || ''}
-                    width={800}
-                    height={600}
-                    className="rounded-lg max-w-full h-auto"
-                    unoptimized
-                    {...props}
-                  />
-                ),
+                img: ({ src, alt, ...props }) => {
+                  const imageSrc = typeof src === 'string' ? src : '';
+                  // Remove width, height, and other props that might conflict with Next.js Image
+                  const { width: _width, height: _height, ...safeProps } = props;
+                  return (
+                    <Image
+                      src={imageSrc || ''}
+                      alt={alt || ''}
+                      width={800}
+                      height={600}
+                      className="rounded-lg max-w-full h-auto"
+                      unoptimized
+                      {...safeProps}
+                    />
+                  );
+                },
               }}
             >
               {cleanMarkdownContent(fullContent)}

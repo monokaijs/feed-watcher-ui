@@ -41,7 +41,7 @@ export function ServiceWorkerProvider({ children }: ServiceWorkerProviderProps) 
         <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-white px-4 py-2 text-center text-sm z-50">
           <div className="flex items-center justify-center gap-2">
             <WifiOff className="w-4 h-4" />
-            <span>You're offline. Some features may not work properly.</span>
+            <span>You&apos;re offline. Some features may not work properly.</span>
           </div>
         </div>
       )}

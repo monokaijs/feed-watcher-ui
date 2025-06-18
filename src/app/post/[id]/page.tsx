@@ -24,6 +24,10 @@ export default function PostDetailPage() {
         
         // Decode the post ID from URL
         const postId = Array.isArray(params.id) ? params.id[0] : params.id;
+        if (!postId) {
+          setError('Invalid post ID');
+          return;
+        }
         const decodedPath = decodeURIComponent(postId);
         
         // Fetch the post content

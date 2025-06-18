@@ -57,7 +57,8 @@ export function ConfigPanel({ onConfigChange }: ConfigPanelProps) {
 
       // Basic validation - check if URL format is correct
       setValidationStatus('valid');
-    } catch (err) {
+    } catch (error) {
+      console.error('Validation error:', error);
       setError('Error validating repository URL');
       setValidationStatus('invalid');
     } finally {

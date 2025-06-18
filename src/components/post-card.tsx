@@ -36,7 +36,7 @@ export function PostCard({ post }: PostCardProps) {
     router.push(`/post/${encodedPath}`);
   };
 
-  const renderAttachment = (attachment: any, index: number) => {
+  const renderAttachment = (attachment: { type?: string; image?: string; description?: string; url?: string }, index: number) => {
     if (attachment.type === 'photo' && attachment.image) {
       return (
         <div key={index} className="mt-3">

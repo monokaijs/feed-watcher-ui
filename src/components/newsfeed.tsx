@@ -21,7 +21,7 @@ export function Newsfeed() {
   });
   const [error, setError] = useState<string>('');
   const [githubAPI, setGithubAPI] = useState<GitHubAPI>(new GitHubAPI(config));
-  const { clearCache, getCacheInfo, preloadNextPage } = useCache(githubAPI);
+  const { clearCache, preloadNextPage } = useCache(githubAPI);
 
   // Intersection observer for infinite scroll
   const { ref: loadMoreRef, inView } = useInView({
@@ -217,7 +217,7 @@ export function Newsfeed() {
         {!pagination.hasMore && posts.length > 0 && (
           <div className="text-center py-8">
             <p className="text-gray-500 text-sm">
-              You've reached the end of the feed
+              You&apos;ve reached the end of the feed
             </p>
           </div>
         )}
