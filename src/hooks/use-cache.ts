@@ -1,29 +1,29 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { GitHubAPI } from '@/lib/github-api';
+import { PostLoader } from '@/lib/post-loader';
 
-export function useCache(githubAPI: GitHubAPI) {
+export function useCache(postLoader: PostLoader) {
   // Clear expired cache entries periodically
   useEffect(() => {
     const interval = setInterval(() => {
-      githubAPI.clearExpiredCache();
+      postLoader.clearExpiredCache();
     }, 10 * 60 * 1000); // Every 10 minutes
 
     return () => clearInterval(interval);
-  }, [githubAPI]);
+  }, [postLoader]);
 
   const clearCache = useCallback(() => {
-    githubAPI.clearCache();
-  }, [githubAPI]);
+    postLoader.clearCache();
+  }, [postLoader]);
 
   const getCacheInfo = useCallback(() => {
-    return githubAPI.getCacheInfo();
-  }, [githubAPI]);
+    return postLoader.getCacheInfo();
+  }, [postLoader]);
 
   const preloadNextPage = useCallback((currentPage: number, pageSize: number = 10) => {
-    githubAPI.preloadPosts(currentPage + 1, pageSize);
-  }, [githubAPI]);
+    postLoader.preloadPosts(currentPage + 1, pageSize);
+  }, [postLoader]);
 
   return {
     clearCache,

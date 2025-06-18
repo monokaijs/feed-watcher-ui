@@ -7,7 +7,7 @@ import { Heart, MessageCircle, Share, ExternalLink, User, Calendar, Hash } from 
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { GitHubAPI } from '@/lib/github-api';
+import { PostLoader } from '@/lib/post-loader';
 import { getConfig } from '@/lib/config';
 
 interface PostDetailViewProps {
@@ -22,8 +22,8 @@ export function PostDetailView({ post }: PostDetailViewProps) {
     const loadFullContent = async () => {
       try {
         const config = getConfig();
-        const githubAPI = new GitHubAPI(config);
-        const content = await githubAPI.getFileContent(post.path);
+        const postLoader = new PostLoader(config);
+        const content = await postLoader.getFileContent(post.path);
         
         // Extract just the content part (after frontmatter)
         const contentMatch = content.match(/^---[\s\S]*?---\n([\s\S]*)$/);

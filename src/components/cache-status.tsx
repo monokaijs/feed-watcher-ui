@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { Database, X, Trash2, Info } from 'lucide-react';
-import { GitHubAPI } from '@/lib/github-api';
+import { PostLoader } from '@/lib/post-loader';
 import { persistentCache } from '@/lib/persistent-cache';
 
 interface CacheStatusProps {
-  githubAPI: GitHubAPI;
+  githubAPI: PostLoader;
 }
 
 export function CacheStatus({ githubAPI }: CacheStatusProps) {

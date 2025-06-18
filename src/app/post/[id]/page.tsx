@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Post } from '@/types/post';
-import { GitHubAPI } from '@/lib/github-api';
+import { PostLoader } from '@/lib/post-loader';
 import { getConfig } from '@/lib/config';
 import { parseMDXContent } from '@/lib/mdx-parser';
 import { PostDetailView } from '@/components/post-detail-view';
@@ -20,7 +20,7 @@ export default function PostDetailPage() {
     const loadPost = async () => {
       try {
         const config = getConfig();
-        const githubAPI = new GitHubAPI(config);
+        const postLoader = new PostLoader(config);
         
         // Decode the post ID from URL
         const postId = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -31,7 +31,7 @@ export default function PostDetailPage() {
         const decodedPath = decodeURIComponent(postId);
         
         // Fetch the post content
-        const content = await githubAPI.getFileContent(decodedPath);
+        const content = await postLoader.getFileContent(decodedPath);
         const fileName = decodedPath.split('/').pop() || '';
         const parsedPost = parseMDXContent(content, fileName, decodedPath);
         

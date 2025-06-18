@@ -3,13 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Post, FeedConfig, PaginationInfo } from '@/types/post';
-import { GitHubAPI, GitHubAPIError } from '@/lib/github-api';
+import { PostLoader } from '@/lib/post-loader';
+import { GitHubAPIError } from '@/lib/github-api';
 import { getConfig } from '@/lib/config';
 import { useCache } from '@/hooks/use-cache';
 import { PostCard } from './post-card';
 import { ConfigPanel } from './config-panel';
 import { CacheStatus } from './cache-status';
-import { Loader2, AlertCircle, RefreshCw, Rss, Database } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw, Rss, Database, HardDrive, Cloud } from 'lucide-react';
 
 export function Newsfeed() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -20,8 +21,8 @@ export function Newsfeed() {
     loading: false,
   });
   const [error, setError] = useState<string>('');
-  const [githubAPI, setGithubAPI] = useState<GitHubAPI>(new GitHubAPI(config));
-  const { clearCache, preloadNextPage } = useCache(githubAPI);
+  const [postLoader, setPostLoader] = useState<PostLoader>(new PostLoader(config));
+  const { clearCache, preloadNextPage } = useCache(postLoader);
 
   // Intersection observer for infinite scroll
   const { ref: loadMoreRef, inView } = useInView({
@@ -46,7 +47,7 @@ export function Newsfeed() {
     setError('');
 
     try {
-      const { posts: newPosts, hasMore } = await githubAPI.getPosts(page, 10);
+      const { posts: newPosts, hasMore } = await postLoader.getPosts(page, 10);
 
       setPosts(prev => reset ? newPosts : [...prev, ...newPosts]);
       setPagination({
@@ -61,19 +62,19 @@ export function Newsfeed() {
       }
     } catch (err) {
       console.log('err', err);
-      const errorMessage = err instanceof GitHubAPIError
+      const errorMessage = err instanceof GitHubAPIError || err instanceof Error
         ? err.message
         : 'An unexpected error occurred while loading posts';
 
       setError(errorMessage);
       setPagination(prev => ({ ...prev, loading: false }));
     }
-  }, [githubAPI]);
+  }, [postLoader]);
 
   const handleConfigChange = useCallback((newConfig: FeedConfig) => {
     setConfig(newConfig);
-    const newAPI = new GitHubAPI(newConfig);
-    setGithubAPI(newAPI);
+    const newPostLoader = new PostLoader(newConfig);
+    setPostLoader(newPostLoader);
 
     // Reset and reload posts with new config
     setPosts([]);
@@ -149,7 +150,7 @@ export function Newsfeed() {
       <ConfigPanel onConfigChange={handleConfigChange} />
 
       {/* Cache Status */}
-      <CacheStatus githubAPI={githubAPI} />
+      <CacheStatus githubAPI={postLoader} />
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
@@ -158,9 +159,24 @@ export function Newsfeed() {
             <div className="flex items-center gap-3">
               <Rss className="w-6 h-6 text-blue-600" />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Feed Watcher</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-bold text-gray-900">Feed Watcher</h1>
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    {postLoader.getMode() === 'local' ? (
+                      <>
+                        <HardDrive className="w-3 h-3" />
+                        Local
+                      </>
+                    ) : (
+                      <>
+                        <Cloud className="w-3 h-3" />
+                        Remote
+                      </>
+                    )}
+                  </div>
+                </div>
                 <p className="text-sm text-gray-600">
-                  {config.owner}/{config.repo}
+                  {postLoader.getMode() === 'local' ? 'Loading from local filesystem' : `${config.owner}/${config.repo}`}
                 </p>
               </div>
             </div>
